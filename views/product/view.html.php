@@ -34,6 +34,10 @@ class JeproshopProductViewProduct extends JViewLegacy
 
     public $category = null;
 
+    public function renderDetails($tpl = null){
+        parent::display($tpl);
+    }
+
 
     public function renderView($tpl = null){
         $app = JFactory::getApplication();

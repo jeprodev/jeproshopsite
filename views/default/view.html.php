@@ -34,7 +34,7 @@ class JeproshopViewDefault extends JViewLegacy
         if(!$this->context->controller->isInitialized()){ $this->context->controller->initialize();  }
         $app = JFactory::getApplication();
 
-        $useSSL = ((isset($this->context->controller->ssl_enabled) && $this->context->conteoller->ssl_enabled && $app->input->get('enable_ssl')) || JeproshopTools::usingSecureMode()) ? true : false;
+        $useSSL = ((isset($this->context->controller->ssl_enabled) && $this->context->controller->ssl_enabled && $app->input->get('enable_ssl')) || JeproshopTools::usingSecureMode()) ? true : false;
         $protocol_content = ($useSSL) ? 'https://' : 'http://';
         /*$contextParams = $this->context->controller->getContextParams();
         foreach ($contextParams as $assign_key => $assign_value){
@@ -54,12 +54,16 @@ class JeproshopViewDefault extends JViewLegacy
             self::$cache_products = false;
         }
 
+        $catalog_mode = (bool)(JeproshopSettingModelSetting::getValue('catalog_mode') || !JeproshopGroupModelGroup::getCurrent()->show_prices);
+        $this->assignRef('catalog_mode', $catalog_mode);
+        $stock_management = (bool)(JeproshopSettingModelSetting::getValue("stock_management"));
+        $this->assignRef('stock_management', $stock_management);
         $this->assignRef('products', self::$cache_products);
         $display_add_product = JeproshopSettingModelSetting::getValue('display_category_attribute');
         $this->assignRef('display_add_product', $display_add_product);
         $homeSize = JeproshopImageModelImage::getSize(JeproshopImageTypeModelImageType::getFormatName('home'));
         $this->assignRef('homeSize',  $homeSize);
-        $this->assignRef('pagination', JeproshopDefaultModelDefault::$_pagination); 
+        $this->assignRef('pagination', JeproshopDefaultModelDefault::$_pagination);
         parent::display($tpl);
     }
 }

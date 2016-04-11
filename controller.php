@@ -432,6 +432,11 @@ class JeproshopController extends JControllerLegacy
         return self::$currentCustomerGroups;
     }
 
+    public function getPageLink($cart, $alias = null, $x = "", $y = "", $z = ""){
+        $anchor = '';
+        return JRoute::_('index.php?option=com_jeproshop' . $anchor);
+    }
+
     /**
      * Create a link to a product
      *
@@ -466,25 +471,25 @@ class JeproshopController extends JControllerLegacy
 
         // Set available keywords
         $anchor = '&task=view&product_id=' . $product->product_id .  ((!$alias) ? '&rewrite=' . $product->getFieldByLang('link_rewrite') : $alias) . ((!$ean13) ? '&ean13=' . $product->ean13 : $ean13);
-        $anchor .= '&meta_keywords=' . JeproshopTools::str2url($product->getFieldByLang('meta_keywords')) . '&meta_title=' . JeproshopTools::str2url($product->getFieldByLang('meta_title'));
+        //$anchor .= '&meta_keywords=' . JeproshopTools::str2url($product->getFieldByLang('meta_keywords')) . '&meta_title=' . JeproshopTools::str2url($product->getFieldByLang('meta_title'));
 
         if ($this->hasKeyword('product', $lang_id, 'manufacturer', $shop_id)) {
-            $params['manufacturer'] = JeproshopTools::str2url($product->isFullyLoaded ? $product->manufacturer_name : JeproshopManufacturerModelManufacturer::getNameById($product->manufacturer_id));
+            //$params['manufacturer'] = JeproshopTools::str2url($product->isFullyLoaded ? $product->manufacturer_name : JeproshopManufacturerModelManufacturer::getNameById($product->manufacturer_id));
         }
         if ($this->hasKeyword('product', $lang_id, 'supplier', $shop_id)) {
-            $params['supplier'] = JeproshopTools::str2url($product->isFullyLoaded ? $product->supplier_name : JeproshopSupplierModelSupplier::getNameById($product->supplier_id));
+            //$params['supplier'] = JeproshopTools::str2url($product->isFullyLoaded ? $product->supplier_name : JeproshopSupplierModelSupplier::getNameById($product->supplier_id));
         }
         if ($this->hasKeyword('product', $lang_id, 'price', $shop_id)) {
-            $params['price'] = $product->isFullyLoaded ? $product->price : JeproshopProductModelProduct::getStaticPrice($product->product_id, false, null, 6, null, false, true, 1, false, null, null, null, $product->specific_price);
+            //$params['price'] = $product->isFullyLoaded ? $product->price : JeproshopProductModelProduct::getStaticPrice($product->product_id, false, null, 6, null, false, true, 1, false, null, null, null, $product->specific_price);
         }
         if ($this->hasKeyword('product', $lang_id, 'tags', $shop_id)) {
-            $params['tags'] = JeproshopTools::str2url($product->getTags($lang_id));
+            //$params['tags'] = JeproshopTools::str2url($product->getTags($lang_id));
         }
         if ($this->hasKeyword('product', $lang_id, 'category', $shop_id)) {
-            $params['category'] = (!is_null($product->category) && !empty($product->category)) ? JeproshopTools::str2url($product->category) : JeproshopTools::str2url($category);
+            //$params['category'] = (!is_null($product->category) && !empty($product->category)) ? JeproshopTools::str2url($product->category) : JeproshopTools::str2url($category);
         }
         if ($this->hasKeyword('product', $lang_id, 'reference', $shop_id)) {
-            $params['reference'] = JeproshopTools::str2url($product->reference);
+            //$params['reference'] = JeproshopTools::str2url($product->reference);
         }
 
         if ($this->hasKeyword('product', $lang_id, 'categories', $shop_id))

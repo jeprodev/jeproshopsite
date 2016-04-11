@@ -61,6 +61,8 @@ class JeproshopProductModelProduct extends JModelLegacy
 
     public $tax_rules_group_id = 1;
 
+
+
     /**
      * We keep this variable for retro_compatibility for themes
      * @deprecated 1.5.0
@@ -79,6 +81,7 @@ class JeproshopProductModelProduct extends JModelLegacy
      * @var boolean Tells if the product uses the advanced stock management
      */
     public $advanced_stock_management = 0;
+    public $stock_management = 0;
     public $out_of_stock;
     public $depends_on_stock;
 

@@ -27,7 +27,7 @@ defined('_JEXEC') or die('Restricted access');
 $document = JFactory::getDocument();
 $app = JFactory::getApplication();
 $page_name = $app->input->get('view');
-$css_dir = JeproshopContext::getContext()->shop->theme_directory;
+$css_dir = isset(JeproshopContext::getContext()->shop->theme_directory) ? JeproshopContext::getContext()->shop->theme_directory : "default";
 $document->addStyleSheet(JURI::base() .'components/com_jeproshop/assets/themes/' . $css_dir . '/css/jeproshop.css');
 $document->addStyleSheet(JURI::base() .'components/com_jeproshop/assets/themes/' . $css_dir . '/css/product_list.css');
 
@@ -61,7 +61,7 @@ if(isset($this->products) && $this->products){
         $nbLi = count($this->products);
         $nbLines = $nbLi/$nbItemsPerLine;
         $ulHeight = ceil($nbLines) * $liHeight;
-        $currentIndex = 0;
+        $currentIndex = 0; $this->catalog_mode = 0;
         foreach($this->products as $product){
             $totModulo = (count($this->products))%$nbItemsPerLine;
             $total = count($this->products);
@@ -71,6 +71,7 @@ if(isset($this->products) && $this->products){
 		    if($totModulo == 0){ $totModulo = $nbItemsPerLine; }
 		    if($totModuloTablet == 0){ $totModuloTablet = $nbItemsPerLineTablet; }
 		    if($totModuloMobile == 0){ $totModuloMobile = $nbItemsPerLineMobile; }
+
         ?>
 		<li class="ajax_block_product <?php if($page_name == '' || $page_name == 'product'){} ?><?php if($currentIndex == 0){ ?>first_item<?php }elseif($currentIndex == ($nbLi-1)){ ?>last_item <?php }else{ ?>item<?php } if((($currentIndex+1)%$nbItemsPerLine) == 0){ ?>last_item_of_line<?php }elseif((($currentIndex +1)%$nbItemsPerLine) == 1){} if(($currentIndex+1) > ($nbLi - $totModulo)){ ?>last_line<?php } ?>">
             <div class="product_container" itemscope itemtype="http://schema.org/Product">
@@ -89,6 +90,25 @@ if(isset($this->products) && $this->products){
                             }elseif(isset($product->reduction) && $product->reduction && isset($product->show_price) && $product->show_price && !$this->catalog_mode){ ?>
                             <span class="discount"><?php echo JText::_('COM_JEPROSHOP_REDUCED_PRICE_LABEL'); ?></span>
                             <?php } ?>
+                            <?php /*if(!$this->catalog_mode && $this->stock_management && ((isset($product->show_price) && $product->show_price) || (isset($product->available_for_order) && $product->available_for_order))){
+                                if(isset($product->available_for_order) && $product->available_for_order && !isset($this->restricted_country_mode)){ ?>
+                                    <span itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="availability">
+								<?php if ($product->allow_out_of_stock_ordering || $product->quantity > 0){ ?>
+                                    <span class="<?php if($product->quantity <= 0 && !$product->allow_out_of_stock_ordering){ ?>out_of_stock<?php }else{ ?>available_now<?php }  ?>">
+										<link itemprop="availability" href="http://schema.org/InStock" /><?php if($product->quantity <= 0){ if($product->allow_out_of_stock_ordering){ if(isset($product->available_later) && $product->available_later){ echo $product->available_later; }else{ echo JText::_('COM_JEPROSHOP_IN_STOCK_LABEL'); } }else{ echo JText::_('COM_JEPROSHOP_OUT_OF_STOCK_LABEL'); } }else{ if(isset($product->available_now) && $product->available_now){ echo $product->available_now; }else{ echo JText::_('COMè_JEPROSHOP_IN_STOCK_LABEL'); } }  ?>
+									</span>
+                                <?php }elseif(isset($product->quantity_all_versions) && $product->quantity_all_versions > 0){ ?>
+                                    <span class="available_dif">
+										<link itemprop="availability" href="http://schema.org/LimitedAvailability" /><?php echo JText::_('COM_JEPROSHOP_PRODUCT_AVAILABLE_WITH_DIFFERENT_OPTIONS_LABEL'); ?>
+									</span>
+                                <?php } else{ ?>
+                                    <span class="out-of-stock">
+										<link itemprop="availability" href="http://schema.org/OutOfStock" /><?php echo JText::_('COM_JEPROSHOP_OUT_OF_STOCK_LABEL'); ?>
+									</span>
+                                <?php }  ?>
+							</span>
+                                <?php }
+                            } */ ?>
                         </div>
                         <?php if(isset($this->quick_view) && $this->quick_view){ ?>
                         <div class="quick_view_wrapper_mobile">
@@ -100,7 +120,7 @@ if(isset($this->products) && $this->products){
                         <div class="content_price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
                             <?php if(isset($product->show_price) && $product->show_price && !isset($this->restricted_country_mode)){ ?>
 							<span itemprop="price" class="price product-price" >
-							    <?php if(!$this->display_price){ echo JeproshopTools::convertPrice($product->price); }else{ echo JeproshopTools::convertPrice($product->price_tax_exc); } ?>
+							    <?php if(!$product->show_price){ echo JeproshopTools::convertPrice($product->price); }else{ echo JeproshopTools::convertPrice($product->price_tax_exc); } ?>
 							</span>
                             <meta itemprop="price_currency" content="<?php echo $this->currency->iso_code; ?>" />
                             <?php if(isset($product->specific_prices) && $product->specific_prices && isset($product->specific_prices->reduction) && $product->specific_prices->reduction > 0){ ?>
@@ -138,7 +158,7 @@ if(isset($this->products) && $this->products){
                     <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="content-price">
                         <?php if(isset($product->show_price) && $product->show_price && !isset($this->restricted_country_mode)){ ?>
 						<span itemprop="price" class="price product-price">
-						    <?php if(!$this->display_price){echo JeproshopTools::convertPrice($product->price); }else{ echo JeproshopTools::convertPrice($product->price_tax_exc); }  ?>
+						    <?php if(!$product->show_price){echo JeproshopTools::convertPrice($product->price); }else{ echo JeproshopTools::convertPrice($product->price_tax_exc); }  ?>
 						</span>
                         <meta itemprop="priceCurrency" content="<?php echo $this->currency->iso_code; ?>" />
                         <?php if(isset($product->specific_prices) && $product->specific_prices && isset($product->specific_prices->reduction) && $product->specific_prices->reduction > 0){ ?>
@@ -174,26 +194,6 @@ if(isset($this->products) && $this->products){
                     <?php if(isset($product->color_list)){ ?>
                     <div class="color-list-container"><?php echo $product->color_list; ?></div>
                     <?php }  ?>
-
-                    <?php if(!$this->catalog_mode && $this->stock_management && ((isset($product->show_price) && $product->show_price) || (isset($product->available_for_order) && $product->available_for_order))){
-                        if(isset($product->available_for_order) && $product->available_for_order && !isset($this->restricted_country_mode)){ ?>
-							<span itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="availability">
-								<?php if ($product->allow_out_of_stock_ordering || $product->quantity > 0){ ?>
-									<span class="<?php if($product->quantity <= 0 && !$product->allow_out_of_stock_ordering){ ?>out_of_stock<?php }else{ ?>available_now<?php }  ?>">
-										<link itemprop="availability" href="http://schema.org/InStock" /><?php if($product->quantity <= 0){ if($product->allow_out_of_stock_ordering){ if(isset($product->available_later) && $product->available_later){ echo $product->available_later; }else{ echo JText::_('COM_JEPROSHOP_IN_STOCK_LABEL'); } }else{ echo JText::_('COM_JEPROSHOP_OUT_OF_STOCK_LABEL'); } }else{ if(isset($product->available_now) && $product->available_now){ echo $product->available_now; }else{ echo JText::_('COMè_JEPROSHOP_IN_STOCK_LABEL'); } }  ?>
-									</span>
-								<?php }elseif(isset($product->quantity_all_versions) && $product->quantity_all_versions > 0){ ?>
-									<span class="available_dif">
-										<link itemprop="availability" href="http://schema.org/LimitedAvailability" /><?php echo JText::_('COM_JEPROSHOP_PRODUCT_AVAILABLE_WITH_DIFFERENT_OPTIONS_LABEL'); ?>
-									</span>
-								<?php } else{ ?>
-									<span class="out-of-stock">
-										<link itemprop="availability" href="http://schema.org/OutOfStock" /><?php echo JText::_('COM_JEPROSHOP_OUT_OF_STOCK_LABEL'); ?>
-									</span>
-								<?php }  ?>
-							</span>
-                    <?php }
-                    }  ?>
                 </div>
                 <?php //if($page_name != ''){ ?>
                 <div class="functional_buttons clearfix">
